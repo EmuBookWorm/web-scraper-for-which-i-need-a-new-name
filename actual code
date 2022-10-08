@@ -1,0 +1,87 @@
+import requests
+from bs4 import BeautifulSoup as bs
+from urllib.request import urlopen, Request
+import re
+
+#this is the main search query
+text = input("What do you want to search? ")
+#opens the search page
+page = requests.get("https://google.com/search?q=" + text, headers={'User-Agent': 'Mozilla/5.0'})
+#retrieves data from page
+data = page.text
+#converts data into useable form
+soup = bs(data, "html.parser")
+
+ls= [] #this is used to pre record all the links
+links = [] #this gets all useable links; i.e, ones that have url in them
+for link in soup.find_all('a'):
+    ls.append(link.get("href"))
+    #algorithm to get all links
+split_content = []
+info_2_b_used = []
+keys = input("What are the keywords you wish to use to fine tune the information? Separate them with a comma and a space. ")
+keywords = keys.split(", ")
+for i in range(0, len(ls)):
+    searchable = re.findall(".*?/url.*?", ls[i], re.IGNORECASE)
+    if searchable != []:
+        new = ls[i].replace("/url?q=", "")
+        new_link = re.sub("&sa.*", "", new)
+        links.append(new_link)
+        #gets all useable links
+        
+    #the above 2 commands get all keywords used to fine-tune search
+
+    k = 0
+    alr_printed = []
+    used_keywords = []
+    i = 0
+    used_links = []
+
+    while i < len(links):
+        linky = links[i]
+        used_links.append(linky)
+        #the below 3 lines of code open the webpage
+        new_page = requests.get(linky)
+        new_data = new_page.text
+        new_soup = bs(new_data, "html.parser")
+        
+
+        
+        #stores curent keyword
+        keyword = str(keywords[k])
+        
+        to_be_printed = []
+        
+        #finds all paragraph tags
+        content = new_soup.find_all('p')
+
+        #splits content to use single list element per paragraph
+        for i in range(0, len(content)):
+            splitt = str(content[i]).split("\n")
+            split_content.append(str(splitt))
+            
+        #stores information to be used
+        
+        length = len(split_content)
+    
+    for s in range(0, len(split_content)):
+        is_found = re.findall(keyword, str(split_content[s]), re.IGNORECASE)
+        if len(is_found) != 0:
+            info_2_b_used.append(split_content[s])
+        
+    for i in range(0, len(info_2_b_used)):
+        info = str(info_2_b_used[i])
+        new_info = info.replace("['", "")
+        new_info = new_info.replace("]'", "")
+        new_info = re.sub("<[^<]+?>", "", info)
+        if new_info not in alr_printed:
+            print(new_info + "link:  " + str(linky))
+            alr_printed.append(new_info)
+    
+    if len(links) == len(used_links):
+        links.clear()
+        k = k + 1
+        i = 0
+    else:
+        i = i + 1
+        continue
