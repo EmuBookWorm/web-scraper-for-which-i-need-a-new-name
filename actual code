@@ -17,8 +17,7 @@ links = [] #this gets all useable links; i.e, ones that have url in them
 for link in soup.find_all('a'):
     ls.append(link.get("href"))
     #algorithm to get all links
-split_content = []
-info_2_b_used = []
+
 keys = input("What are the keywords you wish to use to fine tune the information? Separate them with a comma and a space. ")
 keywords = keys.split(", ")
 for i in range(0, len(ls)):
@@ -36,7 +35,8 @@ for i in range(0, len(ls)):
     used_keywords = []
     i = 0
     used_links = []
-
+    split_content = []
+    info_2_b_used = []
     while i < len(links):
         linky = links[i]
         used_links.append(linky)
