@@ -20,6 +20,16 @@ for link in soup.find_all('a'):
 
 keys = input("What are the keywords you wish to use to fine tune the information? Separate them with a comma and a space. ")
 keywords = keys.split(", ")
+
+results_input = input("How many results would you like per keyword? (If you want a different number of results from each keyword, type 'personalise'. ")
+num_results = []
+result_as_num = None
+try:
+  results_as_num = int(results_input)
+except:
+  print("The entered value is not an integer. Please enter a whole number.")
+else:
+  num_results.append(results_as_num)
 for i in range(0, len(ls)):
     searchable = re.findall(".*?/url.*?", ls[i], re.IGNORECASE)
     if searchable != []:
@@ -35,8 +45,9 @@ for i in range(0, len(ls)):
     used_keywords = []
     i = 0
     used_links = []
-    split_content = []
-    info_2_b_used = []
+    info_2_b_used =[]
+    split_content= []
+
     while i < len(links):
         linky = links[i]
         used_links.append(linky)
@@ -44,8 +55,6 @@ for i in range(0, len(ls)):
         new_page = requests.get(linky)
         new_data = new_page.text
         new_soup = bs(new_data, "html.parser")
-        
-
         
         #stores curent keyword
         keyword = str(keywords[k])
@@ -62,21 +71,24 @@ for i in range(0, len(ls)):
             
         #stores information to be used
         
-        length = len(split_content)
     
     for s in range(0, len(split_content)):
         is_found = re.findall(keyword, str(split_content[s]), re.IGNORECASE)
         if len(is_found) != 0:
             info_2_b_used.append(split_content[s])
-        
-    for i in range(0, len(info_2_b_used)):
-        info = str(info_2_b_used[i])
-        new_info = info.replace("['", "")
-        new_info = new_info.replace("]'", "")
-        new_info = re.sub("<[^<]+?>", "", info)
-        if new_info not in alr_printed:
-            print(new_info + "link:  " + str(linky))
-            alr_printed.append(new_info)
+            print(str(info_2_b_used))
+
+    #Change this loop so that it prints the number of times *required by the values of num_results
+    n = 0
+    for i in range(0, num_results[n]):
+      info = str(info_2_b_used[n])
+      new_info = info.replace("['", "")
+      new_info = new_info.replace("]'", "")
+      new_info = re.sub("<[^<]+?>", "", info)
+      if new_info not in alr_printed:
+          print(new_info + "link:  " + str(linky))
+          alr_printed.append(new_info)
+          n = n + 1
     
     if len(links) == len(used_links):
         links.clear()
