@@ -6,7 +6,7 @@ import re
 #this is the main search query
 text = input("What do you want to search? ")
 #opens the search page
-page = requests.get("https://google.com/search?q=" + text, headers={'User-Agent': 'Mozilla/5.0'}, timeout = 3)
+page = requests.get("https://google.com/search?q=" + text, headers={'User-Agent': 'Mozilla/5.0'})
 #retrieves data from page
 data = page.text
 #converts data into useable form
